@@ -34,7 +34,7 @@ int main(int argc, char** argv)
     int height = 5;
     int width = 8;
 
-    char** mat = new char*[height];
+    auto mat = new char*[height];
 
     for (int i = 0; i < height; i++)
     {
@@ -84,7 +84,6 @@ void letterCount(char** mat, int height, int width, int* result)
     {
         for (int j = 0; j < width; j++)
         {
-            if ()
         }
     }
 }
