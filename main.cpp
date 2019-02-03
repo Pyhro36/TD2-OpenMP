@@ -3,6 +3,8 @@
 #include <functional>
 #include <chrono>
 
+#define LETTER_NB 26
+
 /**
  * Initialise une matrice avec des lettre aleatoires
  * @param mat la matrice correctement instanciee
@@ -19,6 +21,22 @@ void initLetterMat(char** mat, int height, int width);
  */
 void displayMat(char** mat, int height, int width);
 
+/**
+ * Compte le nombre de chaque lettre dans une matrice
+ * @param mat la matrice de lettres
+ * @param height le nombre de ligne de la matrice
+ * @param width le nombre de colonnes de la matrice
+ * @param result le tableau de taille 26, chaque case contient en sortie le nombre d'occurences de chaque lettre
+ * correspondante dans l'alphabet (0 -> a, 1 -> b ...), il doit être préalablement correctement initialise
+ */
+void letterCount(char** mat, int height, int width, int* result);
+
+/**
+ * Affiche un comptage d'occurence de lettre de l'alphabet
+ * @param letterCounts le tableau de taille 26, chaque case contient le nombre d'occurences de chaque lettre
+ * correspondante dans l'alphabet (0 -> a, 1 -> b ...)
+ */
+void displayLetterCount(int* letterCounts);
 
 int main(int argc, char** argv)
 {
@@ -39,7 +57,15 @@ int main(int argc, char** argv)
     // affichage de la matrice
     displayMat(mat, height, width);
 
-    // desinstanciation de la matrice
+    // comptage des lettres
+    auto letterCounts = new int[LETTER_NB] {};
+
+    letterCount(mat, height, width, letterCounts);
+    displayLetterCount(letterCounts);
+
+    // desinstanciation
+    delete[] letterCounts;
+
     for (int i = 0; i < height; i++)
     {
         delete[] mat[i];
@@ -76,6 +102,27 @@ void displayMat(char** mat, int height, int width)
         }
 
         std::cout << std::endl;
+    }
+
+    std::cout << std::endl;
+}
+
+void letterCount(char** mat, int height, int width, int* result)
+{
+    for (int i = 0; i < height; i++)
+    {
+        for (int j = 0; j < width; j++)
+        {
+            result[(int)(mat[i][j] - 'a')]++;
+        }
+    }
+}
+
+void displayLetterCount(int* letterCounts)
+{
+    for (int i = 0; i < LETTER_NB; i++)
+    {
+        std::cout << (char)('a' + i) << " : " << letterCounts[i] << std::endl;
     }
 
     std::cout << std::endl;
