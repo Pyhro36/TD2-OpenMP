@@ -11,6 +11,15 @@
  */
 void initLetterMat(char** mat, int height, int width);
 
+/**
+ * Affiche la matrice de lettres sur la sortie principale
+ * @param mat la matrice de lettres
+ * @param height le nombre de lignes de la matrice
+ * @param width le nombre de colonnes de la matrice
+ */
+void displayMat(char** mat, int height, int width);
+
+
 int main(int argc, char** argv)
 {
     int height = 5;
@@ -26,6 +35,9 @@ int main(int argc, char** argv)
 
     // remplissage de la matrice
     initLetterMat(mat, height, width);
+
+    // affichage de la matrice
+    displayMat(mat, height, width);
 
     // desinstanciation de la matrice
     for (int i = 0; i < height; i++)
@@ -52,4 +64,19 @@ void initLetterMat(char** mat, int height, int width)
             mat[i][j] = draw();
         }
     }
+}
+
+void displayMat(char** mat, int height, int width)
+{
+    for (int i = 0; i < height; i++)
+    {
+        for (int j = 0; j < width; j++)
+        {
+            std::cout << mat[i][j] << " ";
+        }
+
+        std::cout << std::endl;
+    }
+
+    std::cout << std::endl;
 }
