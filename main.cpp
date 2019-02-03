@@ -27,7 +27,7 @@ void displayMat(char** mat, int height, int width);
  * @param height le nombre de ligne de la matrice
  * @param width le nombre de colonnes de la matrice
  * @param result le tableau de taille 26, chaque case contient en sortie le nombre d'occurences de chaque lettre
- * correspondante dans l'alphabet (0 -> a, 1 -> b ...), il doit être préalablement correctement initialise
+ * correspondante dans l'alphabet (0 -> a, 1 -> b ...), il doit être préalablement correctement instancie
  */
 void letterCount(char** mat, int height, int width, int* result);
 
@@ -58,8 +58,7 @@ int main(int argc, char** argv)
     displayMat(mat, height, width);
 
     // comptage des lettres
-    auto letterCounts = new int[LETTER_NB] {};
-
+    auto letterCounts = new int[LETTER_NB];
     letterCount(mat, height, width, letterCounts);
     displayLetterCount(letterCounts);
 
@@ -109,6 +108,11 @@ void displayMat(char** mat, int height, int width)
 
 void letterCount(char** mat, int height, int width, int* result)
 {
+    for (int i = 0; i < LETTER_NB; i++)
+    {
+        result[i] = 0;
+    }
+
     for (int i = 0; i < height; i++)
     {
         for (int j = 0; j < width; j++)
