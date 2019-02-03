@@ -11,29 +11,12 @@
  */
 void initLetterMat(char** mat, int height, int width);
 
-/**
- * Affiche la matrice de lettres sur la sortie principale
- * @param mat la matrice de lettres
- * @param height le nombre de lignes de la matrice
- * @param width le nombre de colonnes de la matrice
- */
-void displayMat(char** mat, int height, int width);
-
-/**
- * Compte le nombre de chaque lettre dans une matrice
- * @param mat la matrice de lettres
- * @param height le nombre de ligne de la matrice
- * @param width le nombre de colonnes de la matrice
- * @param result le tableau de taille 26, chaque case contient en sortie le nombre d'occurence de chaque lettre
- * correspondante dans l'alphabet (0 -> a, 1 -> b ...)
- */
-void letterCount(char** mat, int height, int width, int* result);
-
 int main(int argc, char** argv)
 {
     int height = 5;
     int width = 8;
 
+    // instanciation de la matrice
     auto mat = new char*[height];
 
     for (int i = 0; i < height; i++)
@@ -41,8 +24,16 @@ int main(int argc, char** argv)
         mat[i] = new char[width];
     }
 
+    // remplissage de la matrice
     initLetterMat(mat, height, width);
-    displayMat(mat, height, width);
+
+    // desinstanciation de la matrice
+    for (int i = 0; i < height; i++)
+    {
+        delete[] mat[i];
+    }
+
+    delete[] mat;
 
     return 0;
 }
@@ -59,31 +50,6 @@ void initLetterMat(char** mat, int height, int width)
         for (int j = 0; j < width; j++)
         {
             mat[i][j] = draw();
-        }
-    }
-}
-
-void displayMat(char** mat, int height, int width)
-{
-    for (int i = 0; i < height; i++)
-    {
-        for (int j = 0; j < width; j++)
-        {
-            std::cout << mat[i][j] << " ";
-        }
-
-        std::cout << std::endl;
-    }
-
-    std::cout << std::endl;
-}
-
-void letterCount(char** mat, int height, int width, int* result)
-{
-    for (int i = 0; i < height; i++)
-    {
-        for (int j = 0; j < width; j++)
-        {
         }
     }
 }
