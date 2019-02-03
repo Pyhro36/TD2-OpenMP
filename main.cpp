@@ -184,13 +184,13 @@ void parallelLetterCount(char** mat, int height, int width, int* result)
             result[i] = 0;
         }
 
-        #pragma omp for collapse(2)
+        // reduction sur l'ensemble du tableau de resultats, fonctionne grace a la norme OpenMP 4.5
+        #pragma omp for collapse(2) reduction(+:result[0:LETTER_NB])
         for (int i = 0; i < height; i++)
         {
             for (int j = 0; j < width; j++)
             {
-                #pragma omp atomic
-                result[(int) (mat[i][j] - 'a')]++;
+                result[(int)(mat[i][j] - 'a')]++;
             }
         }
     }
