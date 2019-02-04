@@ -32,6 +32,15 @@ void parallelInitLetterMat(char** mat, int height, int width);
 void displayMat(char** mat, int height, int width);
 
 /**
+ * Affiche les matrices de lettres sur la sortie principale
+ * @param mats le tableau de matrices de lettres [n][height][width]
+ * @param n le nombre de matrices
+ * @param height le nombre de ligne des matrices
+ * @param width le nombre de colonnes des matrices
+ */
+void displayMats(char*** mats, int n, int height, int width);
+
+/**
  * Compte le nombre de chaque lettre dans une matrice
  * @param mat la matrice de lettres
  * @param height le nombre de ligne de la matrice
@@ -40,6 +49,18 @@ void displayMat(char** mat, int height, int width);
  * correspondante dans l'alphabet (0 -> a, 1 -> b ...), il doit être préalablement correctement instancie
  */
 void letterCount(char** mat, int height, int width, int* result);
+
+/**
+ * Decoupe une matrice en tableau de sous-matrices en utilisant la parallelisation OpenMP
+ * @param mat la matrice a decouper
+ * @param height le nombre de lignes de la matrice a decouper
+ * @param width le nombre de colonnes de la matrice a decouper
+ * @param resultHeight la hauteur des matrices resultantes, doit etre un diviseur de height
+ * @param resultWidth la largueur des matrices resultantes, doit etre un diviseur de width
+ * @param result le tableau des matrices resultantes, doit etre instancie correctement selon ces dimensions :
+ * [height/resultHeight * width/resultWidth][resultHeight][resultWidth]
+ */
+void parallelMap(char** mat, int height, int width, int resultHeight, int resultWidth, char*** result);
 
 /**
  * Compte le nombre de chaque lettre dans une matrice en utilisant la parallelisation OpenMP
@@ -60,17 +81,20 @@ void displayLetterCount(int* letterCounts);
 
 int main(int argc, char** argv)
 {
-    int coresNb, height, width;
+    int coresNb, height, width, underHeight, underWidth;
 
-    if (argc < 4)
+    if (argc < 6)
     {
-        std::cout << "usage : app_name number_of_cores height width" << std::endl;
+        std::cout << argc << std::endl;
+        std::cout << "usage : app_name number_of_cores height width under_height under_width" << std::endl;
         return 0;
     }
 
     coresNb = std::stoi(argv[1]);
     width = std::stoi(argv[2]);
     height = std::stoi(argv[3]);
+    underHeight = std::stoi(argv[4]);
+    underWidth = std::stoi(argv[5]);
 
     omp_set_num_threads(coresNb);
 
@@ -86,19 +110,46 @@ int main(int argc, char** argv)
     parallelInitLetterMat(mat, height, width);
 
     // affichage de la matrice
-    // displayMat(mat, height, width);
+    displayMat(mat, height, width);
 
-    // comptage des lettres
-    auto letterCounts = new int[LETTER_NB];
-    auto start = std::chrono::high_resolution_clock::now();
-    parallelLetterCount(mat, height, width, letterCounts);
-    auto end = std::chrono::high_resolution_clock::now();
-    auto timeDuration = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start);
-    displayLetterCount(letterCounts);
-    std::cout << "temps : " << timeDuration.count() << std::endl;
+    // decoupage du probleme en sous-problemes
+    int mapSize = (height / underHeight) * (width / underWidth);
+    auto map = new char**[mapSize];
 
-    // desinstanciation
-    delete[] letterCounts;
+    for (int n = 0; n < mapSize; n++)
+    {
+        map[n] = new char*[underHeight];
+
+        for (int i = 0; i < underHeight; i++)
+        {
+            map[n][i] = new char[underWidth];
+        }
+    }
+
+    parallelMap(mat, height, width, underHeight, underWidth, map);
+    displayMats(map, mapSize, underHeight, underWidth);
+
+//    // comptage des lettres
+//    auto letterCounts = new int[LETTER_NB];
+//    auto start = std::chrono::high_resolution_clock::now();
+//    parallelLetterCount(mat, height, width, letterCounts);
+//    auto end = std::chrono::high_resolution_clock::now();
+//    auto timeDuration = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start);
+//    displayLetterCount(letterCounts);
+//    std::cout << "temps : " << timeDuration.count() << std::endl;
+//
+//    // desinstanciation
+//    delete[] letterCounts;
+
+    for (int n = 0; n < mapSize; n++)
+    {
+        for (int i = 0; i < underHeight; i++)
+        {
+            delete[] map[n][i];
+        }
+
+        delete[] map[n];
+    }
 
     for (int i = 0; i < height; i++)
     {
@@ -158,6 +209,14 @@ void displayMat(char** mat, int height, int width)
     std::cout << std::endl;
 }
 
+void displayMats(char*** mats, int n, int height, int width)
+{
+    for (int i = 0; i < n; i++)
+    {
+        displayMat(mats[i], height, width);
+    }
+}
+
 void letterCount(char** mat, int height, int width, int* result)
 {
     for (int i = 0; i < LETTER_NB; i++)
@@ -170,6 +229,18 @@ void letterCount(char** mat, int height, int width, int* result)
         for (int j = 0; j < width; j++)
         {
             result[(int)(mat[i][j] - 'a')]++;
+        }
+    }
+}
+
+void parallelMap(char** mat, int height, int width, int resultHeight, int resultWidth, char*** result)
+{
+    #pragma parallel for collapse(2)
+    for (int i = 0; i < height; i++)
+    {
+        for (int j = 0; j < width; j++)
+        {
+            result[(i / resultHeight) * (j / resultWidth)][i % resultHeight][j % resultWidth] = mat[i][j];
         }
     }
 }
