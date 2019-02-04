@@ -85,6 +85,16 @@ void parallelMap(char** mat, int height, int width, int resultHeight, int result
 void underParallelLetterCount(char*** mats, int n, int height, int width, int** results);
 
 /**
+ * Somme les résultats de comptages en un seul tableau de résultatq
+ * @param letterCounts le tableau de sous-resultats de taille 26, chaque case contient le nombre d'occurences de chaque
+ * lettre correspondante dans l'alphabet (0 -> a, 1 -> b ...)
+ * @param n le nombre de sous-resultats
+ * @param result le tableau de taille 26, chaque case contient en sortie le nombre d'occurences final de chaque lettre
+ * correspondante dans l'alphabet (0 -> a, 1 -> b ...), il doit être préalablement correctement instancie
+ */
+void parallelReduce(int** letterCounts, int n, int* result);
+
+/**
  * Affiche un comptage d'occurence de lettre de l'alphabet
  * @param letterCounts le tableau de taille 26, chaque case contient le nombre d'occurences de chaque lettre
  * correspondante dans l'alphabet (0 -> a, 1 -> b ...)
@@ -130,17 +140,17 @@ int main(int argc, char** argv)
     parallelInitLetterMat(mat, height, width);
 
     // affichage de la matrice
-    displayMat(mat, height, width);
+    // displayMat(mat, height, width);
 
     // instanciation des sous-matrices et des sous-résultats
     int mapSize = (height / underHeight) * (width / underWidth);
     auto map = new char**[mapSize];
-    auto results = new int*[mapSize];
+    auto underResults = new int*[mapSize];
 
     for (int n = 0; n < mapSize; n++)
     {
         map[n] = new char*[underHeight];
-        results[n] = new int[LETTER_NB];
+        underResults[n] = new int[LETTER_NB];
 
         for (int i = 0; i < underHeight; i++)
         {
@@ -148,30 +158,22 @@ int main(int argc, char** argv)
         }
     }
 
-
+    // comptage des lettres
+    auto letterCounts = new int[LETTER_NB];
+    auto start = std::chrono::high_resolution_clock::now();
     // decoupage du probleme en sous problemes
     parallelMap(mat, height, width, underHeight, underWidth, map);
-
     // comptage dans chaque sous matrice
-    underParallelLetterCount(map, mapSize, underHeight, underWidth, results);
+    underParallelLetterCount(map, mapSize, underHeight, underWidth, underResults);
+    // reduction des sous-resultats
+    parallelReduce(underResults, mapSize, letterCounts);
+    auto end = std::chrono::high_resolution_clock::now();
+    auto timeDuration = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start);
+    // displayLetterCount(letterCounts);
+    std::cout << "temps : " << timeDuration.count() << std::endl;
 
-    // affichage des sous matrices
-    displayMats(map, mapSize, underHeight, underWidth);
-
-    // affichage des sous-resultats
-    displayLetterCounts(results, mapSize);
-
-//    // comptage des lettres
-//    auto letterCounts = new int[LETTER_NB];
-//    auto start = std::chrono::high_resolution_clock::now();
-//    parallelLetterCount(mat, height, width, letterCounts);
-//    auto end = std::chrono::high_resolution_clock::now();
-//    auto timeDuration = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start);
-//    displayLetterCount(letterCounts);
-//    std::cout << "temps : " << timeDuration.count() << std::endl;
-//
-//    // desinstanciation
-//    delete[] letterCounts;
+    // desinstanciation
+    delete[] letterCounts;
 
     for (int n = 0; n < mapSize; n++)
     {
@@ -370,6 +372,27 @@ void underParallelLetterCount(char*** mats, int n, int height, int width, int** 
                         result[(int)(mats[l][i][j] - 'a')]++;
                     }
                 }
+            }
+        }
+    }
+}
+
+void parallelReduce(int** letterCounts, int n, int* result)
+{
+    #pragma omp parallel
+    {
+        #pragma omp for
+        for (int i = 0; i < LETTER_NB; ++i)
+        {
+            result[i] = 0;
+        }
+
+        #pragma omp for reduction(+:result[0:LETTER_NB])
+        for (int i = 0; i < n; ++i)
+        {
+            for (int j = 0; j < LETTER_NB; ++j)
+            {
+                result[j] += letterCounts[i][j];
             }
         }
     }
