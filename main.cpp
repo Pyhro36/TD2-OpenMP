@@ -69,8 +69,8 @@ int main(int argc, char** argv)
     }
 
     coresNb = std::stoi(argv[1]);
-    width = std::stoi(argv[2]);
-    height = std::stoi(argv[3]);
+    height = std::stoi(argv[2]);
+    width = std::stoi(argv[3]);
 
     omp_set_num_threads(coresNb);
 
@@ -86,7 +86,7 @@ int main(int argc, char** argv)
     parallelInitLetterMat(mat, height, width);
 
     // affichage de la matrice
-    // displayMat(mat, height, width);
+    displayMat(mat, height, width);
 
     // comptage des lettres
     auto letterCounts = new int[LETTER_NB];
