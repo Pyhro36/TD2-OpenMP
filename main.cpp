@@ -259,13 +259,28 @@ void parallelLetterCount(char** mat, int height, int width, int* result)
 
 void parallelMap(char** mat, int height, int width, int resultHeight, int resultWidth, char*** result)
 {
-    #pragma parallel for collapse(2)
-    for (int i = 0; i < height; i++)
+    // cas interessant ou l'on decoupe le probleme le plus possible
+    if ((resultHeight == 1) && (resultWidth == 1))
     {
-        for (int j = 0; j < width; j++)
+        #pragma parallel for collapse(2)
+        for (int i = 0; i < height; i++)
         {
-            int h = ((i / resultHeight) * (width / resultWidth)) + (j / resultWidth);
-            result[h][i % resultHeight][j % resultWidth] = mat[i][j];
+            for (int j = 0; j < width; j++)
+            {
+                result[(i * width) + j][0][0] = mat[i][j];
+            }
+        }
+    }
+    else
+    {
+        #pragma parallel for collapse(2)
+        for (int i = 0; i < height; i++)
+        {
+            for (int j = 0; j < width; j++)
+            {
+                int h = ((i / resultHeight) * (width / resultWidth)) + (j / resultWidth);
+                result[h][i % resultHeight][j % resultWidth] = mat[i][j];
+            }
         }
     }
 }
