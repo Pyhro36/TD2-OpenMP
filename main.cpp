@@ -151,6 +151,8 @@ int main(int argc, char** argv)
         delete[] map[n];
     }
 
+    delete[] map;
+
     for (int i = 0; i < height; i++)
     {
         delete[] mat[i];
@@ -240,7 +242,8 @@ void parallelMap(char** mat, int height, int width, int resultHeight, int result
     {
         for (int j = 0; j < width; j++)
         {
-            result[(i / resultHeight) * (j / resultWidth)][i % resultHeight][j % resultWidth] = mat[i][j];
+            int h = ((i / resultHeight) * (width / resultWidth)) + (j / resultWidth);
+            result[h][i % resultHeight][j % resultWidth] = mat[i][j];
         }
     }
 }
