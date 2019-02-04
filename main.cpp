@@ -91,8 +91,8 @@ int main(int argc, char** argv)
     }
 
     coresNb = std::stoi(argv[1]);
-    width = std::stoi(argv[2]);
-    height = std::stoi(argv[3]);
+    height = std::stoi(argv[2]);
+    width = std::stoi(argv[3]);
     underHeight = std::stoi(argv[4]);
     underWidth = std::stoi(argv[5]);
 
