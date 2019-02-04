@@ -91,6 +91,14 @@ void underParallelLetterCount(char*** mats, int n, int height, int width, int** 
  */
 void displayLetterCount(int* letterCounts);
 
+/**
+ * Affiche les comptages d'occurences de lettre de l'alphabet
+ * @param letterCounts le tableau de tableaux de taille 26, chaque case contient le nombre d'occurences de chaque lettre
+ * correspondante dans l'alphabet (0 -> a, 1 -> b ...)
+ * @param n le nombre de tableaux à afficher
+ */
+void displayLetterCounts(int** letterCounts, int n);
+
 int main(int argc, char** argv)
 {
     int coresNb, height, width, underHeight, underWidth;
@@ -124,13 +132,15 @@ int main(int argc, char** argv)
     // affichage de la matrice
     displayMat(mat, height, width);
 
-    // decoupage du probleme en sous-problemes
+    // instanciation des sous-matrices et des sous-résultats
     int mapSize = (height / underHeight) * (width / underWidth);
     auto map = new char**[mapSize];
+    auto results = new int*[mapSize];
 
     for (int n = 0; n < mapSize; n++)
     {
         map[n] = new char*[underHeight];
+        results[n] = new int[LETTER_NB];
 
         for (int i = 0; i < underHeight; i++)
         {
@@ -138,8 +148,18 @@ int main(int argc, char** argv)
         }
     }
 
+
+    // decoupage du probleme en sous problemes
     parallelMap(mat, height, width, underHeight, underWidth, map);
+
+    // comptage dans chaque sous matrice
+    underParallelLetterCount(map, mapSize, underHeight, underWidth, results);
+
+    // affichage des sous matrices
     displayMats(map, mapSize, underHeight, underWidth);
+
+    // affichage des sous-resultats
+    displayLetterCounts(results, mapSize);
 
 //    // comptage des lettres
 //    auto letterCounts = new int[LETTER_NB];
@@ -299,29 +319,40 @@ void parallelMap(char** mat, int height, int width, int resultHeight, int result
 
 void underParallelLetterCount(char*** mats, int n, int height, int width, int** results)
 {
-    #pragma omp parallel
+    // si le decoupage est maximal, plus besoin de paralleliser le comptage devenu unitaire pour chaque sous-matrice
+    if (n == height * width)
     {
-        #pragma omp for collapse(2)
-        for (int k = 0; k < n; ++k)
+        #pragma omp parallel
         {
-            for (int i = 0; i < LETTER_NB; i++)
+            #pragma omp for collapse(2)
+            for (int k = 0; k < n; ++k)
             {
-                results[k][i] = 0;
+                for (int i = 0; i < LETTER_NB; i++)
+                {
+                    results[k][i] = 0;
+                }
             }
-        }
 
-        // si le decoupage est maximal, plus besoin de paralleliser le comptage devenu unitaire pour chaque sous matrice
-        if (n == height * width)
-        {
-            // reduction sur l'ensemble du tableau de resultats, fonctionne grace a la norme OpenMP 4.5
             #pragma omp for
             for (int l = 0; l < n; ++l)
             {
                 results[l][(int) (mats[l][0][0] - 'a')]++;
             }
         }
-        else
+    }
+    else
+    {
+        #pragma omp parallel
         {
+            #pragma omp for collapse(2)
+            for (int k = 0; k < n; ++k)
+            {
+                for (int i = 0; i < LETTER_NB; i++)
+                {
+                    results[k][i] = 0;
+                }
+            }
+
             // reduction sur l'ensemble du tableau de resultats, fonctionne grace a la norme OpenMP 4.5
             #pragma omp for
             for (int l = 0; l < n; ++l)
@@ -329,6 +360,8 @@ void underParallelLetterCount(char*** mats, int n, int height, int width, int** 
                 int* result = results[l];
 
                 // ce pragma est inutile si on découpe prealablement la matrice en matrices de 1 sur 1 (decoupage maximum)
+                // reduction sur l'ensemble du tableau de resultats de chaque sous-matrice, fonctionne grace a la norme
+                // OpenMP 4.5
                 #pragma omp parallel for collapse(2) reduction(+:result[0:LETTER_NB])
                 for (int i = 0; i < height; i++)
                 {
@@ -350,4 +383,12 @@ void displayLetterCount(int* letterCounts)
     }
 
     std::cout << std::endl;
+}
+
+void displayLetterCounts(int** letterCounts, int n)
+{
+    for (int i = 0; i < n; ++i)
+    {
+        displayLetterCount(letterCounts[i]);
+    }
 }

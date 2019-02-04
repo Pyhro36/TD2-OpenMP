@@ -3,7 +3,7 @@ TD 2 de OpenMP, Sema31, Cartographie et réduction de vecteurs de caractères
 
 Le fichier `main.cpp` contient le code pour la question 2.6, en particulier les méthodes
 `underParallelLetterCount(char*** mats, int n, int height, int width, int** results)` et
-`displayLetterCounts(char*** mats, int n, int height, int width)`.
+`displayLetterCounts(int** letterCounts)`.
 
 Pour le compiler, on a utilisé g++ :
 `$ g++ -fopenmp -o out main.cpp`
