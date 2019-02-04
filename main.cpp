@@ -53,7 +53,7 @@ void letterCount(char** mat, int height, int width, int* result);
 /**
  * Compte le nombre de chaque lettre dans une matrice en utilisant la parallelisation OpenMP
  * @param mat la matrice de lettres
- * @param height le nombre de ligne de la matrice
+ * @param height le nombre de lignes de la matrice
  * @param width le nombre de colonnes de la matrice
  * @param result le tableau de taille 26, chaque case contient en sortie le nombre d'occurences de chaque lettre
  * correspondante dans l'alphabet (0 -> a, 1 -> b ...), il doit être préalablement correctement instancie
@@ -71,6 +71,18 @@ void parallelLetterCount(char** mat, int height, int width, int* result);
  * [height/resultHeight * width/resultWidth][resultHeight][resultWidth]
  */
 void parallelMap(char** mat, int height, int width, int resultHeight, int resultWidth, char*** result);
+
+/**
+ * Compte le nombre de chaque lettre dans chaque matrice en utilisant la parallelisation OpenMP
+ * @param mats les matrices de lettres
+ * @param n le nombre de matrices de lettres
+ * @param height le nombre de lignes de chaque matrice
+ * @param width le nombre de colonnes de chaque matrice
+ * @param results les tableaux de taille 26, chaque case contient en sortie le nombre d'occurences de chaque lettre
+ * correspondante dans l'alphabet (0 -> a, 1 -> b ...), il doit être préalablement correctement instancie de taille
+ * [n][26]
+ */
+void underParallelLetterCount(char*** mats, int n, int height, int width, int** results);
 
 /**
  * Affiche un comptage d'occurence de lettre de l'alphabet
@@ -259,13 +271,73 @@ void parallelLetterCount(char** mat, int height, int width, int* result)
 
 void parallelMap(char** mat, int height, int width, int resultHeight, int resultWidth, char*** result)
 {
-    #pragma parallel for collapse(2)
-    for (int i = 0; i < height; i++)
+    // cas interessant ou l'on decoupe le probleme le plus possible
+    if ((resultHeight == 1) && (resultWidth == 1))
     {
-        for (int j = 0; j < width; j++)
+        #pragma parallel for collapse(2)
+        for (int i = 0; i < height; i++)
         {
-            int h = ((i / resultHeight) * (width / resultWidth)) + (j / resultWidth);
-            result[h][i % resultHeight][j % resultWidth] = mat[i][j];
+            for (int j = 0; j < width; j++)
+            {
+                result[(i * width) + j][0][0] = mat[i][j];
+            }
+        }
+    }
+    else
+    {
+        #pragma parallel for collapse(2)
+        for (int i = 0; i < height; i++)
+        {
+            for (int j = 0; j < width; j++)
+            {
+                int h = ((i / resultHeight) * (width / resultWidth)) + (j / resultWidth);
+                result[h][i % resultHeight][j % resultWidth] = mat[i][j];
+            }
+        }
+    }
+}
+
+void underParallelLetterCount(char*** mats, int n, int height, int width, int** results)
+{
+    #pragma omp parallel
+    {
+        #pragma omp for collapse(2)
+        for (int k = 0; k < n; ++k)
+        {
+            for (int i = 0; i < LETTER_NB; i++)
+            {
+                results[k][i] = 0;
+            }
+        }
+
+        // si le decoupage est maximal, plus besoin de paralleliser le comptage devenu unitaire pour chaque sous matrice
+        if (n == height * width)
+        {
+            // reduction sur l'ensemble du tableau de resultats, fonctionne grace a la norme OpenMP 4.5
+            #pragma omp for
+            for (int l = 0; l < n; ++l)
+            {
+                results[l][(int) (mats[l][0][0] - 'a')]++;
+            }
+        }
+        else
+        {
+            // reduction sur l'ensemble du tableau de resultats, fonctionne grace a la norme OpenMP 4.5
+            #pragma omp for
+            for (int l = 0; l < n; ++l)
+            {
+                int* result = results[l];
+
+                // ce pragma est inutile si on découpe prealablement la matrice en matrices de 1 sur 1 (decoupage maximum)
+                #pragma omp parallel for collapse(2) reduction(+:result[0:LETTER_NB])
+                for (int i = 0; i < height; i++)
+                {
+                    for (int j = 0; j < width; j++)
+                    {
+                        result[(int)(mats[l][i][j] - 'a')]++;
+                    }
+                }
+            }
         }
     }
 }
