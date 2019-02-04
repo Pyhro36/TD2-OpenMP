@@ -182,9 +182,11 @@ int main(int argc, char** argv)
             delete[] map[n][i];
         }
 
+        delete[] underResults[n];
         delete[] map[n];
     }
 
+    delete[] underResults;
     delete[] map;
 
     for (int i = 0; i < height; i++)
