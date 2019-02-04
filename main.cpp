@@ -135,12 +135,12 @@ int main(int argc, char** argv)
     // instanciation des sous-matrices et des sous-résultats
     int mapSize = (height / underHeight) * (width / underWidth);
     auto map = new char**[mapSize];
-    auto results = new int*[mapSize];
+    auto underResults = new int*[mapSize];
 
     for (int n = 0; n < mapSize; n++)
     {
         map[n] = new char*[underHeight];
-        results[n] = new int[LETTER_NB];
+        underResults[n] = new int[LETTER_NB];
 
         for (int i = 0; i < underHeight; i++)
         {
@@ -148,18 +148,17 @@ int main(int argc, char** argv)
         }
     }
 
-
     // decoupage du probleme en sous problemes
     parallelMap(mat, height, width, underHeight, underWidth, map);
 
     // comptage dans chaque sous matrice
-    underParallelLetterCount(map, mapSize, underHeight, underWidth, results);
+    underParallelLetterCount(map, mapSize, underHeight, underWidth, underResults);
 
     // affichage des sous matrices
     displayMats(map, mapSize, underHeight, underWidth);
 
     // affichage des sous-resultats
-    displayLetterCounts(results, mapSize);
+    displayLetterCounts(underResults, mapSize);
 
 //    // comptage des lettres
 //    auto letterCounts = new int[LETTER_NB];
@@ -180,9 +179,12 @@ int main(int argc, char** argv)
             delete[] map[n][i];
         }
 
+
+        delete[] underResults[n];
         delete[] map[n];
     }
 
+    delete[] underResults;
     delete[] map;
 
     for (int i = 0; i < height; i++)
