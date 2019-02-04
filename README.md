@@ -6,7 +6,7 @@ Le fichier `main.cpp` contient le code pour la question 2.4, en particulier les 
 `parallelLetterCount(char** mat, int height, int width, int* result)`.
 
 Pour le compiler, on a utilisé g++ :
-`$ g++ -fopenmp -o out main_mat.cpp`
+`$ g++ -fopenmp -o out main.cpp`
 
 Il en sort le fichier `out` qui est l'exécutable.
 
