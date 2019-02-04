@@ -51,6 +51,16 @@ void displayMats(char*** mats, int n, int height, int width);
 void letterCount(char** mat, int height, int width, int* result);
 
 /**
+ * Compte le nombre de chaque lettre dans une matrice en utilisant la parallelisation OpenMP
+ * @param mat la matrice de lettres
+ * @param height le nombre de ligne de la matrice
+ * @param width le nombre de colonnes de la matrice
+ * @param result le tableau de taille 26, chaque case contient en sortie le nombre d'occurences de chaque lettre
+ * correspondante dans l'alphabet (0 -> a, 1 -> b ...), il doit être préalablement correctement instancie
+ */
+void parallelLetterCount(char** mat, int height, int width, int* result);
+
+/**
  * Decoupe une matrice en tableau de sous-matrices en utilisant la parallelisation OpenMP
  * @param mat la matrice a decouper
  * @param height le nombre de lignes de la matrice a decouper
@@ -61,16 +71,6 @@ void letterCount(char** mat, int height, int width, int* result);
  * [height/resultHeight * width/resultWidth][resultHeight][resultWidth]
  */
 void parallelMap(char** mat, int height, int width, int resultHeight, int resultWidth, char*** result);
-
-/**
- * Compte le nombre de chaque lettre dans une matrice en utilisant la parallelisation OpenMP
- * @param mat la matrice de lettres
- * @param height le nombre de ligne de la matrice
- * @param width le nombre de colonnes de la matrice
- * @param result le tableau de taille 26, chaque case contient en sortie le nombre d'occurences de chaque lettre
- * correspondante dans l'alphabet (0 -> a, 1 -> b ...), il doit être préalablement correctement instancie
- */
-void parallelLetterCount(char** mat, int height, int width, int* result);
 
 /**
  * Affiche un comptage d'occurence de lettre de l'alphabet
@@ -235,19 +235,6 @@ void letterCount(char** mat, int height, int width, int* result)
     }
 }
 
-void parallelMap(char** mat, int height, int width, int resultHeight, int resultWidth, char*** result)
-{
-    #pragma parallel for collapse(2)
-    for (int i = 0; i < height; i++)
-    {
-        for (int j = 0; j < width; j++)
-        {
-            int h = ((i / resultHeight) * (width / resultWidth)) + (j / resultWidth);
-            result[h][i % resultHeight][j % resultWidth] = mat[i][j];
-        }
-    }
-}
-
 void parallelLetterCount(char** mat, int height, int width, int* result)
 {
     #pragma omp parallel
@@ -266,6 +253,19 @@ void parallelLetterCount(char** mat, int height, int width, int* result)
             {
                 result[(int)(mat[i][j] - 'a')]++;
             }
+        }
+    }
+}
+
+void parallelMap(char** mat, int height, int width, int resultHeight, int resultWidth, char*** result)
+{
+    #pragma parallel for collapse(2)
+    for (int i = 0; i < height; i++)
+    {
+        for (int j = 0; j < width; j++)
+        {
+            int h = ((i / resultHeight) * (width / resultWidth)) + (j / resultWidth);
+            result[h][i % resultHeight][j % resultWidth] = mat[i][j];
         }
     }
 }
