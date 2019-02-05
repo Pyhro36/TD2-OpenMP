@@ -76,8 +76,8 @@ function strong_scaling {
 }
 
 # Effectue le passage a l'echelle faible en commencant par une matrice de START_HEIGHT x START_WIDTH et des
-# sous-matrices de START_UNDER_HEIGHT x START_UNDER_WIDTH et en faisant doubler le nombre de threads une dimension puis
-# l'autre
+# sous-matrices de START_UNDER_HEIGHT x START_UNDER_WIDTH et en faisant doubler avec le nombre de threads une dimension
+# puis l'autre
 function weak_scaling {
 
     height=${START_HEIGHT}
