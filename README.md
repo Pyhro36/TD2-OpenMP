@@ -24,14 +24,14 @@ Pour faire l'évaluation des performances, on a utilisé les scripts `perf_eval.
 Il enregistre les résulats dans deux fichiers CSV `passage_a_lechelle_fort.csv` et `passage_a_lechelle_faible.csv` de
 format 
 `Nombre de coeurs,Hauteur,Largeur,Sous-Hauteur,Sous-Largeur,t1(ms),t2(ms),t3(ms),t4(ms),t5(ms),t6(ms),t7(ms),Moyenne(ms)`
-où les colonnes jusqu'à `Sous-Largeur` correspondent au parametre d'exécution, `t1(ms)` à `t7(ms)` sont les temps en ms
-des 7 exécutions avec les mêmes paramètres et `Moyenne(ms)` la moyenne de ces temps.
+où les colonnes jusqu'à `Sous-Largeur` correspondent aux parametres d'exécution, `t1(ms)` à `t7(ms)` sont les temps en
+ms des 7 exécutions avec les mêmes paramètres et `Moyenne(ms)` la moyenne de ces temps.
 
-`perf_eval_non_parallelise` utilise le programme `out` non parallelise pour ajouter une série de temps de l'application
+`perf_eval_non_parallelise` utilise le programme `out` non parallelisé pour ajouter une série de temps de l'application
 non parallelisée aux résultats de passage à l'échelle fort dans `passage_a_lechelle_fort.csv`. Cette série est indiquée
 par un nombre de thread égal à 0, pour le distinguer du cas à 1 thread parallelisé.
 
-le fichier `graphes.ods` réunit les résultats pour en tracer les graphes de passage à l'échelle fort et faible.
+Le fichier `graphes.ods` réunit les résultats pour en tracer les graphes de passage à l'échelle fort et faible.
 
-les fichiers `Rapport-TD1-OpenMP-pllefebvre.{odt|pdf}` sont le rapport final détaillant les explications des choix
+Les fichiers `Rapport-TD1-OpenMP-pllefebvre.{odt|pdf}` sont le rapport final détaillant les explications des choix
 d'optimisation, le résumé le l'évaluation des performances et les conclusions associées.
