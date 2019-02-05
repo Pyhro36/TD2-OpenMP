@@ -61,5 +61,5 @@ function iter_exec {
 # script principal
 ####################################################
 echo "executions avec 1 thread et non parallelise"
-iter_exec "1" "${START_HEIGHT}" "${START_WIDTH}" "${START_UNDER_HEIGHT}" "${START_UNDER_WIDTH}" "${STRONG_SCALING_FILE}"
+iter_exec "0" "${START_HEIGHT}" "${START_WIDTH}" "${START_UNDER_HEIGHT}" "${START_UNDER_WIDTH}" "${STRONG_SCALING_FILE}"
 ####################################################
