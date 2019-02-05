@@ -13,5 +13,5 @@ Il en sort le fichier `out` qui est l'exécutable.
 Ce programme s'éxecute de la façon suivante : 
 `$ out nombre_de_threads_OpenMP nombre_de_lignes_de_la_matrice nombre_de_colonnes_de_la_matrice`
 
-Il donne en sortie la matrice générée, le comptage de chaque occurence lettre dans la matrice et le temps de calcul du
-comptage.
+Il donne en sortie la matrice générée, le comptage de chaque occurence lettre dans la matrice et le temps en
+nanosecondes de calcul du comptage.
