@@ -126,7 +126,7 @@ int main(int argc, char** argv)
     underHeight = std::stoi(argv[4]);
     underWidth = std::stoi(argv[5]);
 
-    omp_set_num_threads(coresNb);
+    // omp_set_num_threads(coresNb);
 
     // instanciation de la matrice
     auto mat = new char*[height];
