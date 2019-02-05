@@ -170,7 +170,7 @@ int main(int argc, char** argv)
     auto end = std::chrono::high_resolution_clock::now();
     auto timeDuration = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start);
     // displayLetterCount(letterCounts);
-    std::cout << "temps : " << timeDuration.count() << std::endl;
+    std::cout << timeDuration.count();
 
     // desinstanciation
     delete[] letterCounts;

@@ -14,5 +14,5 @@ Ce programme s'éxecute de la façon suivante :
 nombre_de_lignes_de_chaque_matrice_issue_du_decoupage nombre_de_colonnes_de_chaque_matrice_issue_du_decoupage`
 
 Il donne en sortie : la matrice générée aléatoirement si la ligne 143 a été décommentée, le comptage des occurences de
-chaque lettre dans la matrice si la ligne 172 a été décommentée, et le temps d'execution du calcul de comptage par la
-méthode de découpage.
+chaque lettre dans la matrice si la ligne 172 a été décommentée, et le temps d'execution en nanosecondes du calcul de 
+comptage par la méthode de découpage.
