@@ -324,7 +324,7 @@ void parallelMap(char** mat, int height, int width, int resultHeight, int result
 void underParallelLetterCount(char*** mats, int n, int height, int width, int** results)
 {
     // si le decoupage est maximal, plus besoin de paralleliser le comptage devenu unitaire pour chaque sous-matrice
-    if (n == height * width)
+    if (height == 1 && width == 1)
     {
         #pragma omp parallel
         {
