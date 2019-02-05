@@ -7,19 +7,19 @@
 ITERATIONS=7
 
 # La mise a l'echelle maximale en nombre de coeur, pour le passage a l'echelle fort et faible
-MAX_SCALING=4
+MAX_SCALING=16
 
 # la nombre de lignes de la matrice de lettres (hauteur) de depart
-START_HEIGHT=200
+START_HEIGHT=100
 
 # la nombre de colonnes de la matrice de lettres (largeur) de depart
-START_WIDTH=100
+START_WIDTH=100000
 
 # la nombre de lignes des sous-matrices issues du decoupage du probleme (sous-hauteur) de depart
-START_UNDER_HEIGHT=20
+START_UNDER_HEIGHT=10
 
 # la nombre de colonnes de la matrice de lettres (sous-largeur) de depart
-START_UNDER_WIDTH=10
+START_UNDER_WIDTH=1000
 
 # le nom du fichier de resultats du passage à l'échelle fort
 STRONG_SCALING_FILE="passage_a_lechelle_fort.csv"
