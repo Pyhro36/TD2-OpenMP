@@ -9,7 +9,7 @@ Pour le compiler, on a utilisé g++ :
 
 Il en sort le fichier `out` qui est l'exécutable.
 
-Ce programme s'éxecute de la façon suivante : 
+Ce programme s'exécute de la façon suivante : 
 `$ out`
 
 Il affiche en sortie la matrice générée aléatoirement.
